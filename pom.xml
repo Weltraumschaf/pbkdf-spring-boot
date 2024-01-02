@@ -85,6 +85,13 @@
             <version>3.7.1</version>
         </dependency>
 
+        <!-- Other dependencies: -->
+        <dependency>
+            <groupId>com.hierynomus</groupId>
+            <artifactId>smbj</artifactId>
+            <version>0.13.0</version>
+        </dependency>
+
         <!-- Test dependencies: -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

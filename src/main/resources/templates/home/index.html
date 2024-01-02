@@ -2,16 +2,31 @@
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <body>
 <div layout:fragment="content">
-  <h1 class="ui dividing header">Welocme!</h1>
-
-  <div class="row">
-    <p>
-      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
-      ligula eget dolor! Aenean massa? Cum sociis natoque penatibus et magnis dis
-      parturient montes, nascetur ridiculus mus; Donec quam felis, ultricies nec,
-      pellentesque eu, pretium quis, sem; Nulla consequat massa quis enim!
-    </p>
-  </div>
+  <form method="post">
+    <div>
+      <label for="username">Username:</label>
+      <input id="username" name="username" type="text">
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input id="password" name="password" type="password">
+    </div>
+    <div>
+      <label for="server">Server:</label>
+      <input id="server" name="server" type="text">
+    </div>
+    <div>
+      <label for="domain">Domain:</label>
+      <input id="Domain" name="Domain" type="text" value="WORKGROUP">
+    </div>
+    <div>
+      <label for="share">Share:</label>
+      <input id="share" name="share" type="text">
+    </div>
+    <div>
+      <input type="submit" value="connect...">
+    </div>
+  </form>
 </div>
 </body>
 </html>
