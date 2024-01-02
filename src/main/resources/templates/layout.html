@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+  <title>Special</title>
+
+  <th:block layout:fragment="css"></th:block>
+  <link type="text/css" rel="stylesheet" th:href="@{/static/css/main.css}"/>
+</head>
+
+<body id="root">
+<div layout:fragment="content"></div>
+</div>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<th:block layout:fragment="scripts"></th:block>
+<script th:src="@{/static/js/main.js}"></script>
+<script layout:fragment="javascript"></script>
+</body>
+</html>

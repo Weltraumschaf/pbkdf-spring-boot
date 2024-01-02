@@ -1,0 +1,41 @@
+# Application wide settings for all stages.
+# See https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+server:
+  port: 8888
+  servlet:
+    session:
+      timeout: 15m
+      cookie:
+        http-only: true
+        secure: true
+
+spring:
+  jmx:
+    # Disable JMX at all.
+    enabled: false
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/special
+#    username: special
+#    password: eeteeZ0A
+#  jpa:
+#    show-sql: false
+#    ## Hibernate Properties
+#    properties:
+#      hibernate:
+#        # The SQL dialect makes Hibernate generate better SQL for the chosen database
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        # Hibernate ddl auto (create, create-drop, validate, update)
+#        ddl-auto: update
+#  liquibase:
+#    change-log: classpath:db/master.xml
+#  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    de:
+      weltraumschaf:
+        special: DEBUG
+    org:
+      springframework: INFO
+
