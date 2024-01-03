@@ -9,7 +9,7 @@ tasks:
         -e POSTGRES_PASSWORD=eeteeZ0A
         -e POSTGRES_USER=special
         -e POSTGRES_DB=special
-        -p 5432:5432
+        -p 5433:5432
         -d postgres
 
   stop-db:
