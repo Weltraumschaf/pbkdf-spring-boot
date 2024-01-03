@@ -5,7 +5,7 @@ tasks:
     desc: Run Postgres container
     cmds:
       - >
-        docker container run --name finance --rm
+        docker container run --name special --rm
         -e POSTGRES_PASSWORD=eeteeZ0A
         -e POSTGRES_USER=special
         -e POSTGRES_DB=special
