@@ -1,4 +1,4 @@
-package de.weltraumschaf.special;
+package de.weltraumschaf.special.controller;
 
 import lombok.Data;
 import lombok.ToString;
