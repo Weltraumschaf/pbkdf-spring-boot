@@ -19,7 +19,4 @@ public final class SaltGenerator {
         return random.generateSeed(length);
     }
 
-    public String generateAsHexString(int length) {
-        return DatatypeConverter.printHexBinary(generate(length / 2));
-    }
 }
