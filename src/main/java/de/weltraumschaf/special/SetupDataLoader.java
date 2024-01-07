@@ -44,12 +44,26 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             return;
         }
 
-        final var user = new User();
-        user.setUsername("sxs");
-        user.setPassword(encoder.encode("test1234"));
+        final var user = createDefaultUser();
         users.save(user);
 
         alreadySetup = true;
+    }
+
+    private User createDefaultUser() {
+        final SaltGenerator salts;
+        try {
+            salts = new SaltGenerator();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        final var user = new User();
+        user.setUsername("sxs");
+        user.setPassword(encoder.encode("test1234"));
+        user.setSalt(salts.generateAsHexString(255));
+
+        return user;
     }
 
 }
