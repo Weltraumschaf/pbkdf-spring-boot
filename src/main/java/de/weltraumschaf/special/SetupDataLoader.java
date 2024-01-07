@@ -1,5 +1,6 @@
 package de.weltraumschaf.special;
 
+import de.weltraumschaf.special.crypto.Aes;
 import de.weltraumschaf.special.crypto.SaltGenerator;
 import de.weltraumschaf.special.entity.User;
 import de.weltraumschaf.special.repository.UserRepository;
@@ -12,9 +13,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
+import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -28,6 +27,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private static final int ITERATION_COUNT = 250_000;
     private static final int KEY_LENGTH = 256;
 
+
+    private final SaltGenerator salts = new SaltGenerator();
+    private final Aes crypto = new Aes();
+
     /**
      * Event may be triggered multiple times, so ensure only one run.
      */
@@ -38,7 +41,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private final PasswordEncoder encoder;
 
     @Autowired
-    public SetupDataLoader(@NonNull UserRepository users, @NonNull PasswordEncoder encoder) {
+    public SetupDataLoader(@NonNull UserRepository users, @NonNull PasswordEncoder encoder) throws NoSuchAlgorithmException {
         super();
         this.users = users;
         this.encoder = encoder;
@@ -63,6 +66,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         alreadySetup = true;
     }
 
+
     private User createDefaultUser() {
         try {
             /*
@@ -70,7 +74,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
              * https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html
              * https://security.stackexchange.com/questions/179204/using-pbkdf2-for-hash-and-aes-key-generation-implementation
              */
-            final var salts = new SaltGenerator();
             // FIXME: Generate random password and print to log.
             final var plaintextPassword = "test1234";
             final var salt = salts.generate(128);
@@ -83,8 +86,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             final var user = new User();
             user.setUsername("sxs");
             user.setPassword(encoder.encode(plaintextPassword));
-            user.setEncryptionSalt(DatatypeConverter.printHexBinary(salt));
-            user.setEncryptionKey(DatatypeConverter.printHexBinary(encrypt(derivedKey, randomKey)));
+            user.setKeyDerivationSalt(DatatypeConverter.printHexBinary(salt));
+            final var iv = salts.generate(16);
+            log.info(">>>>>>>>>>>>>>>>>> EncryptionKey: {}", DatatypeConverter.printHexBinary(encryptRandomKey(derivedKey, iv, randomKey)).length());
+            user.setEncryptionKey(DatatypeConverter.printHexBinary(encryptRandomKey(derivedKey, iv, randomKey)));
+            log.info(">>>>>>>>>>>>>>>>>> EncryptionIv: {}", DatatypeConverter.printHexBinary(iv).length());
+            user.setEncryptionIv(DatatypeConverter.printHexBinary(iv));
             return user;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
@@ -105,8 +112,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         return keyGenerator.generateKey();
     }
 
-    private byte[] encrypt(SecretKey derivedKey, SecretKey randomKey) {
-        // FIXME: Encrypt random key with derived key:
-        return randomKey.getEncoded();
+    private byte[] encryptRandomKey(SecretKey derivedKey, byte[] iv, SecretKey randomKey) {
+        return crypto.encrypt(derivedKey, iv, randomKey.getEncoded());
     }
 }
