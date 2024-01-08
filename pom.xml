@@ -91,6 +91,11 @@
             <artifactId>smbj</artifactId>
             <version>0.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>1.6.4</version>
+        </dependency>
 
         <!-- Test dependencies: -->
         <dependency>

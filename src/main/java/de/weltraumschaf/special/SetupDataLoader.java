@@ -7,6 +7,10 @@ import de.weltraumschaf.special.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.passay.CharacterData;
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+import org.passay.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -74,23 +78,20 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
              * https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html
              * https://security.stackexchange.com/questions/179204/using-pbkdf2-for-hash-and-aes-key-generation-implementation
              */
-            // FIXME: Generate random password and print to log.
-            final var plaintextPassword = "test1234";
+            final var plaintextPassword = generateRandomPassword();
             final var salt = salts.generate(128);
             final var derivedKey = deriveKeyFromPassword(plaintextPassword, salt);
             final var randomKey = generateRandomKey();
 
-            log.info(">>>>>>>> DERIVED KEY: {}", DatatypeConverter.printHexBinary(derivedKey.getEncoded()));
-            log.info(">>>>>>>> RANDOM KEY: {}", DatatypeConverter.printHexBinary(randomKey.getEncoded()));
+            log.info(">>>>>>>> LOGIN PASSWORD: {}", plaintextPassword);
+            log.info(">>>>>>>> ENCRYPTION KEY: {}", DatatypeConverter.printHexBinary(randomKey.getEncoded()));
 
             final var user = new User();
-            user.setUsername("sxs");
+            user.setUsername("admin");
             user.setPassword(encoder.encode(plaintextPassword));
             user.setKeyDerivationSalt(DatatypeConverter.printHexBinary(salt));
             final var iv = salts.generate(16);
-            log.info(">>>>>>>>>>>>>>>>>> EncryptionKey: {}", DatatypeConverter.printHexBinary(encryptRandomKey(derivedKey, iv, randomKey)).length());
             user.setEncryptionKey(DatatypeConverter.printHexBinary(encryptRandomKey(derivedKey, iv, randomKey)));
-            log.info(">>>>>>>>>>>>>>>>>> EncryptionIv: {}", DatatypeConverter.printHexBinary(iv).length());
             user.setEncryptionIv(DatatypeConverter.printHexBinary(iv));
             return user;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -98,6 +99,20 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
     }
 
+    private String generateRandomPassword() {
+        // https://www.baeldung.com/java-generate-secure-password
+        final var lowerCaseRule = new CharacterRule(EnglishCharacterData.LowerCase);
+        lowerCaseRule.setNumberOfCharacters(2);
+
+        final var upperCaseRule = new CharacterRule(EnglishCharacterData.UpperCase);
+        upperCaseRule.setNumberOfCharacters(2);
+
+        final var digitRule = new CharacterRule(EnglishCharacterData.Digit);
+        digitRule.setNumberOfCharacters(2);
+
+        return new PasswordGenerator()
+            .generatePassword(10, lowerCaseRule, upperCaseRule, digitRule);
+    }
 
     private SecretKey deriveKeyFromPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         final var factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
